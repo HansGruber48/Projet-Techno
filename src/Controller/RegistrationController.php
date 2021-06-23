@@ -64,10 +64,13 @@ class RegistrationController extends AbstractController
                 'main' // firewall name in security.yaml
             );
         }
-
-        return $this->render('registration/register.html.twig', [
+        if ($this->getuser()) {
+            return $this->render('home/home.html.twig');
+        } else {
+            return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
+        }
     }
 
     /**

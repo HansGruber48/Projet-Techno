@@ -11,7 +11,7 @@ class NewController extends AbstractController
     /**
      * @Route("/", name="techno_home")
      */
-    public function index(): Response
+    public function home(): Response
     {
         return $this->render('new/home.html.twig', [
             'controller_name' => 'NewController',
