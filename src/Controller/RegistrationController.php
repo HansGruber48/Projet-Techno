@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Controller;
 
-use App\Entity\User;
+namespace App\Controller; // déclaration de l'espace de nom App/Controller
+
+// utilisation des espaces de noms pour aller y chercher les classes
+use App\Entity\User; 
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use App\Security\UserAuthenticator;
@@ -16,13 +18,19 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
-class RegistrationController extends AbstractController
+class RegistrationController extends AbstractController 
+// Déclaration de la classe RegistrationController
+//RegistrationController est une extension de la classe de base AbstractController
 {
-    private $emailVerifier;
+    private $emailVerifier; // propriété ou attribut privé(e) à l'intérieur de la classe
 
     public function __construct(EmailVerifier $emailVerifier)
     {
-        $this->emailVerifier = $emailVerifier;
+        $this->emailVerifier = $emailVerifier; 
+        // on utilise $this pour pouvoir inclure la propriété privée $emailVerifier dans la méthode __construct
+        // interne à la classe
+        // la méthode affecte la valeur de la propriété $emailVerifier au champ emailVerifier de l'objet qui 
+        // instancie la classe
     }
 
     /**
@@ -30,9 +38,10 @@ class RegistrationController extends AbstractController
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, UserAuthenticator $authenticator): Response
     {
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
+        $user = new User(); // déclaration de l'instance $user de la classe User
+        $form = $this->createForm(RegistrationFormType::class, $user); // Déclaration du formulaire
+        $form->handleRequest($request); // Vérifie ce qui est entré dans le formulaire et appelle la fonction submit
+                                        // si c'est ok
 
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
@@ -41,7 +50,8 @@ class RegistrationController extends AbstractController
                     $user,
                     $form->get('plainPassword')->getData()
                 )
-            );
+            ); // Si le formulaire est ok est que le submit est confirmé, alors l'objet $user est hydraté 
+               // et le mot de passe est encrypté 
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
@@ -54,22 +64,23 @@ class RegistrationController extends AbstractController
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
+                    // crée une URL et l'envoit à l'email de l'utilsateur
             );
             // do anything else you need here, like send an email
 
            
             return $guardHandler->authenticateUserAndHandleSuccess(
-                $user,
+                $user, // Authentifie l'utilisateur et envoie une réponse positive si utilisateur authentifié
                 $request,
                 $authenticator,
                 'main' // firewall name in security.yaml
             );
-        }
+        } 
         if ($this->getuser()) {
-            return $this->render('home/home.html.twig');
+            return $this->render('home/home.html.twig'); // rendu du template home
         } else {
-            return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView(),
+            return $this->render('registration/register.html.twig', [ // rendu du template register
+            'registrationForm' => $form->createView(), // création de la vue
         ]);
         }
     }
